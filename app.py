@@ -30,19 +30,14 @@ def prec_handler():
     session = Session(engine)
     query_date = dt.date(2017,8,23) - dt.timedelta(days=365)
     meas_data = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date >= query_date).order_by(Measurement.date).all()
-    # prec_query = session.query(Measurement).all()
-    results_1 = []
-    # results_2 = []
+    results = []
 
     for row in meas_data:
-        results_1.append({row[0]:row[1]})
-    
-    # for row in results_1:
-    #     results_2.append({row})
+        results.append({row[0]:row[1]})
 
     session.close()
 
-    return jsonify(results_1)
+    return jsonify(results)
 
 # @app.route("/api/v1.0/stations")
 
