@@ -18,10 +18,6 @@ Base.prepare(engine, reflect=True)
 Measurement = Base.classes.measurement
 Station = Base.classes.station
 
-session = Session(engine)
-
-conn = engine.connect()
-
 # App setup
 app = Flask(__name__)
 
@@ -30,6 +26,11 @@ def home():
     return "Welcome to the home page. Here is a list of available endpoints:<br><br><br>Precipitation data: /api/v1.0/precipitation<br><br>Station data: /api/v1.0/stations<br><br>Temperatures of most active station: /api/v1.0/tobs<br><br>Min, max, and avg temperatures from selected date: /api/v1.0/[date]<br><br>Min, max, and avg temperatures from selected date range: /api/v1.0/[start date]/[end date]"
 
 # @app.route("/api/v1.0/precipitation")
+def prec_handler():
+    session = Session(engine)
+
+    session.close()
+
 
 # @app.route("/api/v1.0/stations")
 
