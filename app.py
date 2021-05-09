@@ -39,7 +39,25 @@ def prec_handler():
 
     return jsonify(results)
 
-# @app.route("/api/v1.0/stations")
+@app.route("/api/v1.0/stations")
+def station_handler():
+    session = Session(engine)
+    query_stations = session.query(Station.elevation,Station.longitude,Station.name,Station.id,Station.latitude,Station.station).all()
+    results = []
+
+    for row in query_stations:
+        results.append({
+            "elevation" : row[0],
+            "longitude": row[1],
+            "name": row[2],
+            "id": row[3],
+            "latitude": row[4],
+            "station": row[5]
+        })
+
+    session.close()
+
+    return jsonify(results) 
 
 # @app.route("/api/v1.0/tobs")
 
