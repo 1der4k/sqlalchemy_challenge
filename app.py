@@ -59,7 +59,19 @@ def station_handler():
 
     return jsonify(results) 
 
-# @app.route("/api/v1.0/tobs")
+@app.route("/api/v1.0/tobs")
+def tobs_handler():
+    session = Session(engine)
+    active_query_date = dt.date(2017,8,18) - dt.timedelta(days=365)
+    active_meas_data = session.query(Measurement.date,Measurement.tobs).filter(Measurement.station == 'USC00519281').filter(Measurement.date >= active_query_date).order_by(Measurement.date).all()
+    results = []
+
+    for row in active_meas_data:
+        results.append({row[0]:row[1]})
+
+    session.close()
+
+    return jsonify(results)
 
 # @app.route("/api/v1.0/<start>")
 
