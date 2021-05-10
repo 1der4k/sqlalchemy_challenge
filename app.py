@@ -23,7 +23,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Welcome to the home page. Here is a list of available endpoints:<br><br><br>Precipitation data: /api/v1.0/precipitation<br><br>Station data: /api/v1.0/stations<br><br>Temperatures of most active station: /api/v1.0/tobs<br><br>Min, max, and avg temperatures from selected date: /api/v1.0/[date]<br><br>Min, max, and avg temperatures from selected date range: /api/v1.0/[start date]/[end date]"
+    return "Welcome to the home page. Here is a list of available endpoints:<br><br><br>Precipitation data: /api/v1.0/precipitation<br><br>Station data: /api/v1.0/stations<br><br>Temperatures of most active station: /api/v1.0/tobs<br><br>Min, max, and avg temperatures from selected date: /api/v1.0/[start date]<br><br>Min, max, and avg temperatures from selected date range: /api/v1.0/[start date]/[end date]"
 
 @app.route("/api/v1.0/precipitation")
 def prec_handler():
@@ -73,9 +73,51 @@ def tobs_handler():
 
     return jsonify(results)
 
-# @app.route("/api/v1.0/<start>")
+@app.route("/api/v1.0/<start>")
+def date_handler(start):
+    session = Session(engine)
+    stat_sum = [
+        func.min(Measurement.tobs),
+        func.max(Measurement.tobs),
+        func.avg(Measurement.tobs)
+    ]
 
-# @app.route("/api/v1.0/<start>/<end>")
+    results = []
+
+    date_query = session.query(*stat_sum).filter(Measurement.date >= start).all()
+
+    for row in date_query:
+        results.append({
+            "min": row[0],
+            "max": row[1],
+            "avg": round(row[2],1)
+        })
+
+    return jsonify(results)
+
+@app.route("/api/v1.0/<start>/<end>")
+def date_range_handler(start,end):
+    session = Session(engine)
+    stat_sum = [
+        func.min(Measurement.tobs),
+        func.max(Measurement.tobs),
+        func.avg(Measurement.tobs)
+    ]
+
+    results = []
+
+    date_range_query = session.query(*stat_sum).filter(Measurement.date >= start).filter(Measurement.date <= end).all()
+
+    for row in date_range_query:
+        results.append({
+            "min": row[0],
+            "max": row[1],
+            "avg": round(row[2],1)
+        })
+
+    return jsonify(results)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
